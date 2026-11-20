@@ -127,7 +127,7 @@ object VolumeInjector {
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
         PixelFormat.TRANSLUCENT
     ).apply {
-        gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL  // use Gravity.RIGHT for the right edge
+        gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL  // use Gravity.RIGHT for the right edge
         x = dp(10)
         title = "iOSPill"
     }
@@ -136,7 +136,7 @@ object VolumeInjector {
         pill.animate().cancel()
         if (!shown) {
             pill.alpha = 0f
-            pill.translationX = -dp(30).toFloat()
+            pill.translationX = dp(30).toFloat()
             try {
                 // 2020 = TYPE_VOLUME_OVERLAY (also shows above the lock screen)
                 wm.addView(pill, params(2020))
@@ -162,7 +162,7 @@ object VolumeInjector {
 
     private fun hide() {
         if (!shown) return
-        pill.animate().alpha(0f).translationX(-dp(30).toFloat()).setDuration(200)
+        pill.animate().alpha(0f).translationX(dp(30).toFloat()).setDuration(200)
             .withEndAction {
                 try {
                     wm.removeView(pill)
