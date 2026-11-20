@@ -14,6 +14,8 @@ import android.os.Looper
 import android.provider.Settings
 import android.view.Gravity
 import android.view.WindowManager
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import de.robv.android.xposed.XposedBridge
 import kotlin.math.roundToInt
 
@@ -122,13 +124,13 @@ object VolumeInjector {
     }
 
     private fun params(type: Int) = WindowManager.LayoutParams(
-        dp(64), dp(250), type,
+        dp(52), dp(245), type,
         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
         PixelFormat.TRANSLUCENT
     ).apply {
         gravity = Gravity.RIGHT or Gravity.CENTER_VERTICAL  // use Gravity.RIGHT for the right edge
-        x = dp(10)
+        x = dp(8)
         title = "iOSPill"
     }
 
@@ -137,6 +139,8 @@ object VolumeInjector {
         if (!shown) {
             pill.alpha = 0f
             pill.translationX = dp(30).toFloat()
+            pill.scaleX = 0.9f
+            pill.scaleY = 0.9f
             try {
                 // 2020 = TYPE_VOLUME_OVERLAY (also shows above the lock screen)
                 wm.addView(pill, params(2020))
@@ -151,7 +155,8 @@ object VolumeInjector {
                 }
             }
         }
-        pill.animate().alpha(1f).translationX(0f).setDuration(180).start()
+        pill.animate().alpha(1f).translationX(0f).scaleX(1f).scaleY(1f)
+            .setDuration(280).setInterpolator(OvershootInterpolator(1.0f)).start()
         scheduleHide()
     }
 
@@ -162,7 +167,8 @@ object VolumeInjector {
 
     private fun hide() {
         if (!shown) return
-        pill.animate().alpha(0f).translationX(dp(30).toFloat()).setDuration(200)
+        pill.animate().alpha(0f).translationX(dp(30).toFloat()).scaleX(0.92f).scaleY(0.92f)
+            .setDuration(200).setInterpolator(AccelerateInterpolator())
             .withEndAction {
                 try {
                     wm.removeView(pill)
