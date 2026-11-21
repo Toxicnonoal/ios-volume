@@ -175,7 +175,7 @@ object VolumeInjector {
             .withEndAction {
                 try {
                     wm.removeView(pill)
-                } catch (_: Throwable) {
+                } catch (e: Throwable) {
                 }
                 shown = false
             }

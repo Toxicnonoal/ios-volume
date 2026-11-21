@@ -122,7 +122,12 @@ class PillView(ctx: Context) : View(ctx) {
         if (!dragging) animateGrow(0f, SHRINK_MS, false)
     }
 
+    private var growTarget = -1f
+
     private fun animateGrow(target: Float, ms: Long, bounce: Boolean) {
+        // don't restart the same animation on every touch-move event
+        if (target == growTarget && (growAnim?.isRunning == true || kotlin.math.abs(grow - target) < 0.001f)) return
+        growTarget = target
         growAnim?.cancel()
         growAnim = ValueAnimator.ofFloat(grow, target).apply {
             duration = ms
@@ -177,16 +182,16 @@ class PillView(ctx: Context) : View(ctx) {
                 .invoke(drawable, (BLUR_RADIUS * d).toInt())
             try {
                 cls.getMethod("setColor", Int::class.javaPrimitiveType).invoke(drawable, Color.TRANSPARENT)
-            } catch (_: Throwable) {
+            } catch (e: Throwable) {
             }
             blurSetCorner = try {
                 cls.getMethod("setCornerRadius", Float::class.javaPrimitiveType)
-            } catch (_: Throwable) {
+            } catch (e: Throwable) {
                 null
             }
             blurDrawable = drawable
             updateTrackColor()
-        } catch (_: Throwable) {
+        } catch (e: Throwable) {
             blurDrawable = null
         }
     }
@@ -216,7 +221,7 @@ class PillView(ctx: Context) : View(ctx) {
             b.setBounds(rect.left.toInt(), rect.top.toInt(), rect.right.toInt(), rect.bottom.toInt())
             try {
                 blurSetCorner?.invoke(b, r)
-            } catch (_: Throwable) {
+            } catch (e: Throwable) {
             }
             b.draw(canvas)
         }
